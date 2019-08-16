@@ -26,48 +26,64 @@ class QTree:
         self.vertLine = Line(tempA,tempB)
         self.horzLine = Line(tempC,tempD)
 
+    #Create inBoundary(Point) return bool
+    def inBoundary(self,p):
+        return (p.getX() >= self.topLeft.getX() and
+                p.getX() <= self.botRight.getX() and
+                p.getY() <= self.topLeft.getY() and
+                p.getY() >= self.botRight.getY())
+
     def showTree(self,win):
         self.vertLine.draw(win)
         self.horzLine.draw(win)
+        if(self.topLeftTree != None):
+            self.topLeftTree.showTree(win)
+        if(self.topRightTree != None):
+            self.topRightTree.showTree(win)
+        if(self.botLeftTree != None):
+            self.botLeftTree.showTree(win)
+        if(self.botRightTree != None):
+            self.botRightTree.showTree(win)
 
     #Create insert(Node *) return void
-    def insert(self, N):
+    def insert(self,N):
         if(N == None):
             return
 
-        if(not inBoundary(N.position)):
+        if(not self.inBoundary(N.Position)):
             return
 
         if(abs(self.topLeft.getX() - self.botRight.getX()) <= 1 and
            abs(self.topLeft.getY() - self.botRight.getY()) <= 1):
-            if(tNode == None):
-                tNode = N
+            if(self.tNode == None):
+                self.tNode = N
+                self.showTree(win)
             return
 
-        if((self.topLeft.getX()+self.botRight.getX())/2 >= N.position.getX()):
+        if((self.topLeft.getX()+self.botRight.getX())/2 >= N.Position.getX()):
             #Indicates topLeftTree
-            if((self.topLeft.getY() + self.botRight.getY()) / 2 >= N.position.getY()):
+            if((self.topLeft.getY() + self.botRight.getY()) / 2 >= N.Position.getY()):
                 if(self.topLeftTree == None):
                     self.topLeftTree = QTree(
                         Point(self.topLeft.getX(),self.topLeft.getY()),
                         Point((self.topLeft.getX()+self.botRight.getX())/2,
                               (self.topLeft.getY()+self.botRight.getY())/2))
-                    self.topLeftTree.insert(N)
+                self.topLeftTree.insert(N)
             #Indicates botLeftTree
             else:
                     if(self.botLeftTree == None):
                         self.botLeftTree = QTree(
-                            Point(self.topLeft.getX(),(self.topLeft.getY()+botRight.getY())/2),
+                            Point(self.topLeft.getX(),(self.topLeft.getY()+self.botRight.getY())/2),
                             Point((self.topLeft.getX()+self.botRight.getX())/2,self.botRight.getY()))
-                        self.botLeftTree.insert(N)
+                    self.botLeftTree.insert(N)
         else:
             #Indicates topRightTree
-            if((self.topLeft.getY()+self.botRight.getY())/2 >= N.position.getY()):
+            if((self.topLeft.getY()+self.botRight.getY())/2 >= N.Position.getY()):
                 if(self.topRightTree == None):
                     self.topRightTree = QTree(
                         Point((self.topLeft.getX()+self.botRight.getX())/2,self.topLeft.getY()),
-                        Point(self.botRight.getX(),(self.topLeft.getY()+self.botRight.getX())/2))
-                    self.topRightTree.insert(N)
+                        Point(self.botRight.getX(),(self.topLeft.getY()+self.botRight.getY())/2))
+                self.topRightTree.insert(N)
             #Indicates botRightTree
             else:
                 if(self.botRightTree == None):
@@ -79,15 +95,10 @@ class QTree:
         
     #Create search(Point)return Node*
         
-    #Create inBoundary(Point) return bool
-    def inBoundary(self,p):
-        return (p.getX() >= self.topLeft.getX() and
-                p.getX() <= self.botRight.getX() and
-                p.getY() <= self.topLeft.getY() and
-                p.getY() >= self.botRight.getY())
+
 
 def fillDataPoints(pointArr):
-    for x in range(512):
+    for x in range(2):
         a = Point(randint(0,512),randint(0,512))
         pointArr.append(a)
         
@@ -96,15 +107,23 @@ def showDataPoints(pointArr,win):
     for a in pointArr:
         a.draw(win)
 
+def fillNodeArray(nodeArr,pointArr):
+    for a in pointArr:
+        nodeArr.append(Node(a,0))
+
 def main():
     win = GraphWin("Quadtree Example",512,512)
     pointArr = []
     fillDataPoints(pointArr)
     showDataPoints(pointArr,win)
 
+    nodeArr = []
+    fillNodeArray(nodeArr,pointArr)
 
-    
     myQTree = QTree(Point(0,512),Point(512,0))
+    qt_size = 1
+    for a in nodeArr:
+        QTree.insert(myQTree,a)
     myQTree.showTree(win)
 
 
