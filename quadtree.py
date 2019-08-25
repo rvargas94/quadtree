@@ -130,11 +130,12 @@ def main():
 
     myQTree = QTree(Point(0,0),Point(512,512))
     for a in pointArr:
-        temp = Node(a,1)
-        a.draw(win)
+        b = win.getMouse()
+        temp = Node(b,1)
+        b.draw(win)
         myQTree.insert(temp)
         myQTree.showTree(win)
-        #win.getMouse()
+        win.getMouse()
 
 if __name__=="__main__":
     main()
