@@ -1,5 +1,6 @@
 from graphics import *
 from random import randint
+import pdb 
 
 class Node:
     def __init__(self,Position,Data):
@@ -11,7 +12,8 @@ class Node:
         return self.Data
 
 class QTree:
-    def __init__(self,Left,Right):
+    def __init__(self,Left=None,Right=None):
+
         self.topLeftTree=None
         self.topRightTree=None
         self.botLeftTree=None
@@ -19,12 +21,6 @@ class QTree:
         self.tNode = None
         self.topLeft=Left
         self.botRight=Right
-        tempA = Point(self.botRight.getX()/2,self.topLeft.getY())
-        tempB = Point(self.botRight.getX()/2,0)
-        tempC = Point(self.botRight.getX(),self.topLeft.getY()/2)
-        tempD = Point(0,self.topLeft.getY()/2)
-        self.vertLine = Line(tempA,tempB)
-        self.horzLine = Line(tempC,tempD)
 
     #Create inBoundary(Point) return bool
     def inBoundary(self,p):
@@ -34,8 +30,20 @@ class QTree:
                 p.getY() >= self.botRight.getY())
 
     def showTree(self,win):
-        self.vertLine.draw(win)
-        self.horzLine.draw(win)
+        if(self.topLeftTree == None and
+           self.topRightTree == None and
+           self.botLeftTree == None and
+           self.botRightTree == None):
+            return
+        else:
+            tempA = Point((self.botRight.getX()+self.topLeft.getX())/2,self.topLeft.getY())
+            tempB = Point((self.botRight.getX()+self.topLeft.getX())/2,self.botRight.getY())
+            tempC = Point(self.botRight.getX(),(self.topLeft.getY()+self.botRight.getY())/2)
+            tempD = Point(self.topLeft.getX(),(self.topLeft.getY()+self.botRight.getY())/2)
+            vertLine = Line(tempA,tempB)
+            horzLine = Line(tempC,tempD)
+            vertLine.draw(win)
+            horzLine.draw(win)
         if(self.topLeftTree != None):
             self.topLeftTree.showTree(win)
         if(self.topRightTree != None):
@@ -44,15 +52,17 @@ class QTree:
             self.botLeftTree.showTree(win)
         if(self.botRightTree != None):
             self.botRightTree.showTree(win)
+        return
 
     #Create insert(Node *) return void
     def insert(self,N):
+        if(self.tNode == None):
+            self.tNode = N
+            return
         if(N == None):
             return
 
-        if(not self.inBoundary(N.Position)):
-            return
-
+        #checks if 2 nodes are in same position
         if(abs(self.topLeft.getX() - self.botRight.getX()) <= 1 and
            abs(self.topLeft.getY() - self.botRight.getY()) <= 1):
             if(self.tNode == None):
@@ -60,6 +70,7 @@ class QTree:
                 self.showTree(win)
             return
 
+        #left side
         if((self.topLeft.getX()+self.botRight.getX())/2 >= N.Position.getX()):
             #Indicates topLeftTree
             if((self.topLeft.getY() + self.botRight.getY()) / 2 >= N.Position.getY()):
@@ -98,7 +109,7 @@ class QTree:
 
 
 def fillDataPoints(pointArr):
-    for x in range(2):
+    for x in range(256):
         a = Point(randint(0,512),randint(0,512))
         pointArr.append(a)
         
@@ -113,19 +124,17 @@ def fillNodeArray(nodeArr,pointArr):
 
 def main():
     win = GraphWin("Quadtree Example",512,512)
+
     pointArr = []
     fillDataPoints(pointArr)
-    showDataPoints(pointArr,win)
 
-    nodeArr = []
-    fillNodeArray(nodeArr,pointArr)
-
-    myQTree = QTree(Point(0,512),Point(512,0))
-    qt_size = 1
-    for a in nodeArr:
-        QTree.insert(myQTree,a)
-    myQTree.showTree(win)
-
+    myQTree = QTree(Point(0,0),Point(512,512))
+    for a in pointArr:
+        temp = Node(a,1)
+        a.draw(win)
+        myQTree.insert(temp)
+        myQTree.showTree(win)
+        #win.getMouse()
 
 if __name__=="__main__":
     main()
