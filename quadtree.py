@@ -22,7 +22,7 @@ class QTree:
         self.topLeft=Left
         self.botRight=Right
 
-    #Create inBoundary(Point) return bool
+    
     def inBoundary(self,p):
         return (p.getX() >= self.topLeft.getX() and
                 p.getX() <= self.botRight.getX() and
